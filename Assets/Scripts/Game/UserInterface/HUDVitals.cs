@@ -36,6 +36,15 @@ namespace DaggerfallWorkshop.Game.UserInterface
         VerticalProgress healthBarGain = new VerticalProgress();
         VerticalProgress fatigueBarGain = new VerticalProgress();
         VerticalProgress magickaBarGain = new VerticalProgress();
+        // Start ModernStats addition
+        VerticalProgress cappedHealthBar = new VerticalProgress();
+        VerticalProgress cappedFatigueBar = new VerticalProgress();
+        VerticalProgress cappedMagickaBar = new VerticalProgress();
+        VerticalProgress maxHealthBar = new VerticalProgress();
+        VerticalProgress maxFatigueBar = new VerticalProgress();
+        VerticalProgress maxMagickaBar = new VerticalProgress();
+        // End ModernStats addition
+
         PlayerEntity playerEntity;
 
         Color healthLossColor = new Color(0, 0.22f, 0);
@@ -44,6 +53,12 @@ namespace DaggerfallWorkshop.Game.UserInterface
         Color healthGainColor = new Color(0.60f, 1f, 0.60f);
         Color fatigueGainColor = new Color(1f, 0.50f, 0.50f);
         Color magickaGainColor = new Color(0.70f, 0.70f, 1f);
+        // Start ModernStats addition
+        Color cappedHealthBarColor = new Color(0.03f, 0.1f, 0.03f);
+        Color cappedFatigueBarColor = new Color(0.22f, 0.08f, 0.08f);
+        Color cappedMagickaBarColor = new Color(0.08f, 0.08f, 0.22f);
+        Color maxBarColor = new Color(0.01f, 0.01f, 0.01f);
+        // End ModernStats addition
 
         /// <summary>
         /// Gets or sets current health as value between 0 and 1.
@@ -104,8 +119,24 @@ namespace DaggerfallWorkshop.Game.UserInterface
                 healthBarGain.VerticalAlignment = VerticalAlignment.Bottom;
                 fatigueBarGain.VerticalAlignment = VerticalAlignment.Bottom;
                 magickaBarGain.VerticalAlignment = VerticalAlignment.Bottom;
+                // Start ModernStats addition
+                cappedHealthBar.VerticalAlignment = VerticalAlignment.Bottom;
+                cappedMagickaBar.VerticalAlignment = VerticalAlignment.Bottom;
+                cappedFatigueBar.VerticalAlignment = VerticalAlignment.Bottom;
+                maxHealthBar.VerticalAlignment = VerticalAlignment.Bottom;
+                maxMagickaBar.VerticalAlignment = VerticalAlignment.Bottom;
+                maxFatigueBar.VerticalAlignment = VerticalAlignment.Bottom;
+                // End ModernStats addition
 
                 // to make bar appear behind other bars, add it first.
+                // Start ModernStats addition
+                Components.Add(maxHealthBar);
+                Components.Add(maxFatigueBar);
+                Components.Add(maxMagickaBar);
+                Components.Add(cappedHealthBar);
+                Components.Add(cappedFatigueBar);
+                Components.Add(cappedMagickaBar);
+                // End ModernStats addition
                 Components.Add(healthBarLoss);
                 Components.Add(fatigueBarLoss);
                 Components.Add(magickaBarLoss);
@@ -135,6 +166,15 @@ namespace DaggerfallWorkshop.Game.UserInterface
             healthBarGain.HorizontalAlignment = alignment;
             fatigueBarGain.HorizontalAlignment = alignment;
             magickaBarGain.HorizontalAlignment = alignment;
+            // Start ModernStats addition
+            maxHealthBar.HorizontalAlignment = alignment;
+            maxFatigueBar.HorizontalAlignment = alignment;
+            maxMagickaBar.HorizontalAlignment = alignment;
+            cappedHealthBar.HorizontalAlignment = alignment;
+            cappedMagickaBar.HorizontalAlignment = alignment;
+            cappedFatigueBar.HorizontalAlignment = alignment;
+            // End ModernStats addition
+
         }
 
         public void SetAllVerticalAlignment(VerticalAlignment alignment)
@@ -148,6 +188,14 @@ namespace DaggerfallWorkshop.Game.UserInterface
             healthBarGain.VerticalAlignment = alignment;
             fatigueBarGain.VerticalAlignment = alignment;
             magickaBarGain.VerticalAlignment = alignment;
+            // Start ModernStats addition
+            maxHealthBar.VerticalAlignment = alignment;
+            maxFatigueBar.VerticalAlignment = alignment;
+            maxMagickaBar.VerticalAlignment = alignment;
+            cappedHealthBar.VerticalAlignment = alignment;
+            cappedMagickaBar.VerticalAlignment = alignment;
+            cappedFatigueBar.VerticalAlignment = alignment;
+            // End ModernStats addition
         }
 
         public void SetAllAutoSize(AutoSizeModes mode)
@@ -161,6 +209,14 @@ namespace DaggerfallWorkshop.Game.UserInterface
             healthBarGain.AutoSize = mode;
             fatigueBarGain.AutoSize = mode;
             magickaBarGain.AutoSize = mode;
+            // Start ModernStats addition
+            maxHealthBar.AutoSize = mode;
+            maxFatigueBar.AutoSize = mode;
+            maxMagickaBar.AutoSize = mode;
+            cappedHealthBar.AutoSize = mode;
+            cappedMagickaBar.AutoSize = mode;
+            cappedFatigueBar.AutoSize = mode;
+            // End ModernStats addition
         }
 
         public void SetAllParent(Panel parent)
@@ -174,6 +230,14 @@ namespace DaggerfallWorkshop.Game.UserInterface
             healthBarGain.Parent = parent;
             fatigueBarGain.Parent = parent;
             magickaBarGain.Parent = parent;
+            // Start ModernStats addition
+            maxHealthBar.Parent = parent;
+            maxFatigueBar.Parent= parent;
+            maxMagickaBar.Parent= parent;
+            cappedHealthBar.Parent = parent;
+            cappedMagickaBar.Parent = parent;
+            cappedFatigueBar.Parent = parent;
+            // End ModernStats addition
         }
 
         void LoadAssets()
@@ -186,6 +250,10 @@ namespace DaggerfallWorkshop.Game.UserInterface
                 fatigueBarLoss.Color = healthLossColor;
                 healthBarGain.Color = fatigueGainColor;
                 fatigueBarGain.Color = healthGainColor;
+                // Start ModernStats addition
+                cappedHealthBar.Color = cappedFatigueBarColor;
+                cappedFatigueBar.Color = cappedHealthBarColor;
+                // End ModernStats addition
             }
             else
             {
@@ -195,10 +263,18 @@ namespace DaggerfallWorkshop.Game.UserInterface
                 fatigueBarLoss.Color = fatigueLossColor;
                 healthBarGain.Color = healthGainColor;
                 fatigueBarGain.Color = fatigueGainColor;
+                // Start ModernStats addition
+                cappedHealthBar.Color = cappedHealthBarColor;
+                cappedFatigueBar.Color= cappedFatigueBarColor;
+                // End ModernStats addition
             }
             magickaBar.ProgressTexture = DaggerfallUI.GetTextureFromImg(magickaBarFilename);
             magickaBarLoss.Color = magickaLossColor;
             magickaBarGain.Color = magickaGainColor;
+            // Start ModernStats addition
+            maxHealthBar.Color = maxFatigueBar.Color = maxMagickaBar.Color = maxBarColor;
+            cappedMagickaBar.Color = cappedMagickaBarColor;
+            // End ModernStats addition
         }
 
         public override void Update()
@@ -232,6 +308,15 @@ namespace DaggerfallWorkshop.Game.UserInterface
 
             magickaBar.Position = (CustomMagickaBarPosition != null) ? CustomMagickaBarPosition.Value : Position + new Vector2(barWidth * 4, 0);
             magickaBar.Size = (CustomMagickaBarSize != null) ? CustomMagickaBarSize.Value : new Vector2(barWidth, barHeight);
+
+            // Start ModernStats addition
+            maxHealthBar.Position = cappedHealthBar.Position = healthBar.Position;
+            maxHealthBar.Size = cappedHealthBar.Size = healthBar.Size;
+            maxFatigueBar.Position = cappedFatigueBar.Position = fatigueBar.Position;
+            maxFatigueBar.Size = cappedFatigueBar.Size = fatigueBar.Size;
+            maxMagickaBar.Position = cappedMagickaBar.Position = magickaBar.Position;
+            maxMagickaBar.Size = cappedMagickaBar.Size = magickaBar.Size;
+            // End ModernStats addition
 
             if (DaggerfallUnity.Settings.EnableVitalsIndicators)
             {
@@ -285,6 +370,12 @@ namespace DaggerfallWorkshop.Game.UserInterface
             healthBar.Cycle();
             fatigueBar.Cycle();
             magickaBar.Cycle();
+            // Start ModernStats addition
+            maxHealthBar.Amount = maxFatigueBar.Amount = maxMagickaBar.Amount = 1;
+            cappedHealthBar.Amount = 0.5f;
+            cappedFatigueBar.Amount = 0.5f;
+            cappedMagickaBar.Amount = 0.5f;
+            // End ModernStats addition
         }
 
         private void VitalsDetector_HealthChanged(object sender, System.EventArgs e)

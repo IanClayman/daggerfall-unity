@@ -10,6 +10,7 @@
 //
 
 using DaggerfallConnect;
+using ModernStaminaMod;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -64,6 +65,14 @@ namespace DaggerfallWorkshop.Game
             currentRunSpeed = GetRunSpeed();
         }
 
+        // begin ModerStamina addition
+        public float delayPrintingRunStaminaWarning = 0;
+        void Update()
+        {
+            delayPrintingRunStaminaWarning = Mathf.Clamp(delayPrintingRunStaminaWarning - Time.deltaTime, 0, delayPrintingRunStaminaWarning);
+        }
+        // end ModernStamina addition
+
         /// <summary>
         /// Record player input for speed adjustment
         /// </summary>
@@ -97,6 +106,29 @@ namespace DaggerfallWorkshop.Game
             {
                 ToggleRun = false;
             }
+
+            // begin ModernStamina addition
+            if (GameManager.Instance.StateManager.GameInProgress)
+            {
+                if (ModernStamina.Instance.CurrentStamina <= 0 && InputManager.Instance.ActionStarted(InputManager.Actions.Run))
+                {
+                    DaggerfallUI.AddHUDText("Can't run - no stamina!");
+                    runningMode = false;
+                    delayPrintingRunStaminaWarning = 1;
+                    ModernStamina.Instance.DelayStaminaRecovery();
+                }
+                if(ModernStamina.Instance.CurrentStamina <= 0 && InputManager.Instance.HasAction(InputManager.Actions.Run))
+                {
+                    if (delayPrintingRunStaminaWarning <= 0)
+                    {
+                        DaggerfallUI.AddHUDText("Can't run - no stamina!", 1);
+                        delayPrintingRunStaminaWarning = 1;
+                    }
+                    runningMode = false;
+                    ModernStamina.Instance.DelayStaminaRecovery();
+                }
+            }
+            // end ModernStamina addition
         }
 
         /// <summary>

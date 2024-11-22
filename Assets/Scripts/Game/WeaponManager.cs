@@ -22,6 +22,8 @@ using DaggerfallWorkshop.Game.MagicAndEffects;
 using DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects;
 using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Utility;
+using ModernStaminaMod;
+using Mono.CSharp;
 
 namespace DaggerfallWorkshop.Game
 {
@@ -202,8 +204,16 @@ namespace DaggerfallWorkshop.Game
             SetMelee(ScreenWeapon);
         }
 
+        // begin ModernStamina addition
+        public float delayPrintingAttackStaminaWarning = 0;
+        // end ModernStamina addition
+
         void Update()
         {
+            // begin ModernStamina addition
+            delayPrintingAttackStaminaWarning = Mathf.Clamp(delayPrintingAttackStaminaWarning - Time.deltaTime, 0, delayPrintingAttackStaminaWarning);
+            // end ModernStamina addition
+
             // Automatically update weapons from inventory when PlayerEntity available
             if (playerEntity != null)
                 UpdateHands();
@@ -318,6 +328,9 @@ namespace DaggerfallWorkshop.Game
                             && InputManager.Instance.HasAction(InputManager.Actions.SwingWeapon)))
                     {
                         isClickAttack = true;
+                        // begin ModernStamina addition
+                        PrintStaminaMessageAndDelayRecovery();
+                        // end ModernStamina addition
                     }
                     else
                     {
@@ -326,7 +339,10 @@ namespace DaggerfallWorkshop.Game
                     }
                 }
             }
-
+            // begin ModernStamina addition
+            if (ModernStamina.Instance.CurrentStamina <= 0)
+                return;
+            // end ModernStamina Addition
             var attackDirection = MouseDirections.None;
             if (!isAttacking)
             {
@@ -363,6 +379,16 @@ namespace DaggerfallWorkshop.Game
             {
                 ExecuteAttacks(attackDirection);
                 isAttacking = true;
+                // ModernStamina addition
+                // TODO: test if this is working correctly for bows and hand-to-hand
+                if (ScreenWeapon.WeaponType == WeaponTypes.Melee || ScreenWeapon.WeaponType == WeaponTypes.Werecreature)
+                    ModernStamina.Instance.CurrentStamina -= ModernStamina.HandToHandStaminaCost * 10;
+                else if (bowEquipped)
+                    ModernStamina.Instance.CurrentStamina -= ModernStamina.RangedStaminaCost * 10;
+                else
+                    ModernStamina.Instance.CurrentStamina -= ModernStamina.MeleeStaminaCost * 10;
+                ModernStamina.Instance.DelayStaminaRecovery();
+                // end ModernStamina addition
             }
 
             // Stop here if no attack is happening
@@ -411,7 +437,6 @@ namespace DaggerfallWorkshop.Game
                         lastBowUsed = usingRightHand ? currentRightHandWeapon : currentLeftHandWeapon;;
                     }
                 }
-
                 // Fatigue loss
                 playerEntity.DecreaseFatigue(swingWeaponFatigueLoss);
 
@@ -780,6 +805,39 @@ namespace DaggerfallWorkshop.Game
         #endregion
 
         #region Private Methods
+
+        // begin ModernStamina addition
+        // TODO: the printing is very inconsistent
+        // Sometimes it double prints for click and hold
+        // delayPrintingAttackStaminaWarning doesn't alway tick down
+        void PrintStaminaMessageAndDelayRecovery()
+        {
+            if (ModernStamina.Instance.CurrentStamina <= 0)
+            {
+                float weaponAnimTime = FormulaHelper.GetMeleeWeaponAnimTime(GameManager.Instance.PlayerEntity, currentRightHandWeapon.GetWeaponType(), ItemHands.Either);
+
+                if (InputManager.Instance.ActionStarted(InputManager.Actions.SwingWeapon))
+                {
+                    //Debug.Log("WeaponManager: Click");
+                    DaggerfallUI.AddHUDText("Can't attack - not enough stamina");
+                    delayPrintingAttackStaminaWarning = 1;
+                    ModernStamina.Instance.DelayStaminaRecovery();
+                    return;
+                }
+                else if (DaggerfallUnity.Settings.WeaponSwingMode == 2 && InputManager.Instance.HasAction(InputManager.Actions.SwingWeapon))
+                {
+                    if (delayPrintingAttackStaminaWarning <= 0)
+                    {
+                        //Debug.Log("WeaponManager: Hold");
+                        delayPrintingAttackStaminaWarning = 1;
+                        DaggerfallUI.AddHUDText("Can't attack - not enough stamina");
+                    }
+                    ModernStamina.Instance.DelayStaminaRecovery();
+                    return;
+                }
+            }
+        }
+        // end ModernStamina addition
 
         MouseDirections TrackMouseAttack()
         {

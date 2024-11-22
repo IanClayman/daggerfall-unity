@@ -1,3 +1,4 @@
+using ModernStaminaMod;
 using UnityEngine;
 
 namespace DaggerfallWorkshop.Game
@@ -55,6 +56,10 @@ namespace DaggerfallWorkshop.Game
             myTransform = playerMotor.transform;
         }
 
+        // begin ModernStamina addition
+        bool hasPrintedJumpStaminaWarning = false;
+        // end ModernStamina addition
+
         /// <summary>
         /// Jump!
         /// </summary>
@@ -78,6 +83,18 @@ namespace DaggerfallWorkshop.Game
 
             if (InputManager.Instance.HasAction(InputManager.Actions.Jump))
             {
+                // begin ModernStamina addition
+                if (ModernStamina.Instance.CurrentStamina <= 0)
+                {
+                    if (!hasPrintedJumpStaminaWarning)
+                    {
+                        DaggerfallUI.AddHUDText("Can't jump - not enough stamina!");
+                        hasPrintedJumpStaminaWarning = true;
+                    }
+                    return;
+                }
+                // end ModernStamina addition
+
                 float jumpSpeedMultiplier;
                 if (GameManager.Instance.TransportManager.TransportMode == TransportModes.Horse)
                 {
@@ -119,6 +136,9 @@ namespace DaggerfallWorkshop.Game
             }
             else
             {
+                // begin ModernStamina addition
+                hasPrintedJumpStaminaWarning = false;
+                // end ModernStamina addition
                 jumping = false;
             }
         }
